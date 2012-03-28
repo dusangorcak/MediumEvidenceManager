@@ -1,5 +1,7 @@
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -117,6 +119,31 @@ public class MediumManagerImpl implements MediumManager {
         if(med.getId() == null){
             throw new IllegalArgumentException("Error: med is null");
         }  
+                     
+        if(med.getAuthor() == null || med.getAuthor().trim().isEmpty()){
+            throw new IllegalArgumentException("Author has to be set.");
+        }        
+        if(med.getName() == null || med.getName().trim().isEmpty()){
+            throw new IllegalArgumentException("Name has to be set.");
+        }
+        
+        if(med.getGenre() == null || med.getGenre().trim().isEmpty()){
+            throw new IllegalArgumentException("Genre has to be set.");
+        }
+        
+        if(med.getPrice() == null){
+            throw new IllegalArgumentException("Price has to be set.");
+        }
+        
+        if(med.getPrice().signum() == -1 || med.getPrice().signum() == 0){
+            throw new IllegalArgumentException("Price must be greather than zero.");
+        }
+        
+        if( !med.getType().equals(TypeOfMedium.BOOK) &&
+            !med.getType().equals(TypeOfMedium.CD) &&
+            !med.getType().equals(TypeOfMedium.DVD)){
+            throw new IllegalArgumentException("Wrong type of medium.");
+        }
                
                                
         PreparedStatement st = null;
@@ -191,23 +218,101 @@ public class MediumManagerImpl implements MediumManager {
         medium.setGenre(rs.getString("genre"));
         medium.setPrice(rs.getBigDecimal("price"));
         medium.setType(getEnum(rs.getString("type")));
-        System.out.println(rs.getString("type"));
         return medium;
         //tomas
     }
     
     private TypeOfMedium getEnum(String type) {
         if(type.equals("BOOK")) return TypeOfMedium.BOOK;
-        if(type.equals("DVD")) return TypeOfMedium.CD;
-        if(type.equals("CD")) return TypeOfMedium.DVD;
+        if(type.equals("DVD")) return TypeOfMedium.DVD;
+        if(type.equals("CD")) return TypeOfMedium.CD;
         return null;        
     }
     
-    public List<Medium> getAllMediums(){
-        throw new UnsupportedOperationException("Not supported yet.");
+    @Override
+    public List<Medium> getAllMediums() throws IllegalArgumentException {
+        PreparedStatement st = null;
+        Connection conn = null;
+        try {
+            conn = datasource.getConnection();
+            st = conn.prepareStatement(
+                    "SELECT id,name,author,genre,price,type FROM medium");
+            ResultSet rs = st.executeQuery();
+            
+            List<Medium> result = new ArrayList<Medium>();
+            while (rs.next()) {
+                result.add(resultSetToMedium(rs));
+            }
+            return result;
+            
+        } catch(SQLException ex){
+            logger.log(Level.SEVERE, "Error: when retrieving");
+            throw new RunTimeFailureException("Error: retrieving medium - ",ex);
+        } finally{
+            Utils.closeQuietly(conn);
+        }
     }
     
-    public void updateMedium(Medium medium){
-        throw new UnsupportedOperationException("Not supported yet.");
+    @Override
+    public void updateMedium(Medium medium) throws IllegalArgumentException {
+        if(medium == null){
+            throw new IllegalArgumentException("Error: medium is null");
+        }
+        
+        if(medium.getId() == null){
+            throw new IllegalArgumentException("Error: medium is null");
+        }  
+                     
+        if(medium.getAuthor() == null || medium.getAuthor().trim().isEmpty()){
+            throw new IllegalArgumentException("Author has to be set.");
+        }        
+        if(medium.getName() == null || medium.getName().trim().isEmpty()){
+            throw new IllegalArgumentException("Name has to be set.");
+        }
+        
+        if(medium.getGenre() == null || medium.getGenre().trim().isEmpty()){
+            throw new IllegalArgumentException("Genre has to be set.");
+        }
+        
+        if(medium.getPrice() == null){
+            throw new IllegalArgumentException("Price has to be set.");
+        }
+        
+        if(medium.getPrice().signum() == -1 || medium.getPrice().signum() == 0){
+            throw new IllegalArgumentException("Price must be greather than zero.");
+        }
+        
+        if( !medium.getType().equals(TypeOfMedium.BOOK) &&
+            !medium.getType().equals(TypeOfMedium.CD) &&
+            !medium.getType().equals(TypeOfMedium.DVD)){
+            throw new IllegalArgumentException("Wrong type of mediumium.");
+        }
+              
+               
+        PreparedStatement st = null;
+        Connection conn = null;
+        try {
+            conn = datasource.getConnection();
+            st = conn.prepareStatement
+                    ("UPDATE medium SET name=?, author=?, genre=?, price=?, type=?"
+                            + " WHERE id=?");
+            st.setLong(6,medium.getId());
+            st.setString(1, medium.getName());
+            st.setString(2, medium.getAuthor());
+            st.setString(3,medium.getGenre());
+            st.setBigDecimal(4, medium.getPrice());
+            st.setString(5, medium.getType().toString());
+            int updated = st.executeUpdate();
+            if(updated > 5){
+                throw new RunTimeFailureException("Error: updated may be max 5 attributes" + medium);
+            }
+            
+        
+        } catch(SQLException ex){
+            logger.log(Level.SEVERE, "Error: when deleting medium -{0}", medium);
+            throw new RunTimeFailureException("Error: deleting medium - " + medium,ex);
+        } finally{
+            Utils.closeQuietly(conn);
+        }
     }
 }

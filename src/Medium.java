@@ -44,7 +44,9 @@ public class Medium {
     }
 
     public void setId(Long id) {
-        this.id = id;
+        if(this.id == null) this.id = id;
+        else throw new IllegalArgumentException(" Error: Id set multiple times");
+    
     }
 
     public void setName(String name) {

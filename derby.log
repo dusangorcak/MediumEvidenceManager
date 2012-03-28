@@ -1,0 +1,10 @@
+----------------------------------------------------------------
+Wed Mar 28 19:07:54 CEST 2012:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): instance a816c00e-0136-5a47-25b8-0000009b22f0 
+on database directory memory:D:\Dusan Win7\Libraries\Documents\NetBeansProjects\EvidenceManager\EvidenceManagerTest  with class loader sun.misc.Launcher$AppClassLoader@2a340e 
+Loaded from file:/C:/Program%20Files/Java/jdk1.7.0/db/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.7.0-b147
+user.dir=D:\Dusan Win7\Libraries\Documents\NetBeansProjects\EvidenceManager
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

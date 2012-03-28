@@ -179,6 +179,7 @@ public class MediumManagerTest {
       Long mediumId = medium1.getId();      
       
       medium1 = manager.getMedium(mediumId);
+      
       medium1.setAuthor("XX");
       manager.updateMedium(medium1);
       assertEquals("Java", medium1.getName());
@@ -348,9 +349,10 @@ public class MediumManagerTest {
       
       try {
         medium.setId(1l);
-        manager.deleteMedium(medium);        
-      } catch (RunTimeFailureException ex) {
-            fail();//OK
+        manager.deleteMedium(medium); 
+        fail();
+      } catch (IllegalArgumentException ex) {
+            //OK
       }
     }
     
