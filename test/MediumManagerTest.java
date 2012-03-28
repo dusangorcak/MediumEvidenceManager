@@ -16,6 +16,7 @@ import org.junit.Test;
  *
  * @author Tomas Marton
  * dusko je curacik
+ * dusik je curan najvacsi
  */
 public class MediumManagerTest {
     
