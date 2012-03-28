@@ -15,6 +15,7 @@ import org.junit.Test;
 /**
  *
  * @author Tomas Marton
+ * dusko je curacik
  */
 public class MediumManagerTest {
     
