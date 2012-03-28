@@ -28,14 +28,14 @@ public class MediumManagerImpl implements MediumManager {
         if(medium.getId() != null){
             throw new IllegalArgumentException("medium has allready set id");
         }        
-        if(medium.getAuthor() == null){
+        if(medium.getAuthor() == null || medium.getAuthor().trim().isEmpty()){
             throw new IllegalArgumentException("Author has to be set.");
         }        
-        if(medium.getName() == null){
+        if(medium.getName() == null || medium.getName().trim().isEmpty()){
             throw new IllegalArgumentException("Name has to be set.");
         }
         
-        if(medium.getGenre() == null){
+        if(medium.getGenre() == null || medium.getGenre().trim().isEmpty()){
             throw new IllegalArgumentException("Genre has to be set.");
         }
         
@@ -145,8 +145,7 @@ public class MediumManagerImpl implements MediumManager {
            
         if(id == null){
             throw new IllegalArgumentException("Id is null");
-        } 
-        
+        }        
         if(id <= 0){
             throw new IllegalArgumentException("Id must be greather than zero.");
         }
@@ -192,6 +191,7 @@ public class MediumManagerImpl implements MediumManager {
         medium.setGenre(rs.getString("genre"));
         medium.setPrice(rs.getBigDecimal("price"));
         medium.setType(getEnum(rs.getString("type")));
+        System.out.println(rs.getString("type"));
         return medium;
         //tomas
     }
@@ -200,8 +200,7 @@ public class MediumManagerImpl implements MediumManager {
         if(type.equals("BOOK")) return TypeOfMedium.BOOK;
         if(type.equals("DVD")) return TypeOfMedium.CD;
         if(type.equals("CD")) return TypeOfMedium.DVD;
-        return null;
-        
+        return null;        
     }
     
     public List<Medium> getAllMediums(){

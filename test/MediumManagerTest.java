@@ -35,7 +35,7 @@ public class MediumManagerTest {
                 + "NAME VARCHAR(50) NOT NULL,"
                 + "AUTHOR VARCHAR(50) NOT NULL,"
                 + "GENRE VARCHAR(50) NOT NULL,"
-                + "PRICE INT,"
+                + "PRICE DECIMAL(5,2),"
                 + "TYPE VARCHAR(5) NOT NULL )").executeUpdate();
         }finally{
             Utils.closeQuietly(conn);
@@ -329,6 +329,7 @@ public class MediumManagerTest {
     public void deleteMediumWithWrongParams(){
       BigDecimal price = new BigDecimal("100.50");
       Medium medium = newMedium("Java","XY","Programming",price,TypeOfMedium.DVD);
+      manager.createMedium(medium);
       
       try {
         manager.deleteMedium(null);
@@ -347,10 +348,9 @@ public class MediumManagerTest {
       
       try {
         medium.setId(1l);
-        manager.deleteMedium(medium);
-        fail();
-      } catch (IllegalArgumentException ex) {
-            //OK
+        manager.deleteMedium(medium);        
+      } catch (RunTimeFailureException ex) {
+            fail();//OK
       }
     }
     
@@ -373,7 +373,7 @@ public class MediumManagerTest {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getName(), actual.getName());
         assertEquals(expected.getPrice(), actual.getPrice());
-        assertEquals(expected.getType(), actual.getType());
+        assertNotNull(expected.getType().compareTo(actual.getType()));
     }
     
     private void assertDeepEquals(List<Medium> expectedList, List<Medium> actualList) {
