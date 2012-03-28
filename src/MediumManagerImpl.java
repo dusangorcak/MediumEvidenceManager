@@ -47,9 +47,9 @@ public class MediumManagerImpl implements MediumManager {
             throw new IllegalArgumentException("Price must be greather than zero.");
         }
         
-        if(medium.getType() != TypeOfMedium.BOOK || 
-                medium.getType() != TypeOfMedium.CD||
-                  medium.getType() != TypeOfMedium.DVD){
+        if( !medium.getType().equals(TypeOfMedium.BOOK) &&
+            !medium.getType().equals(TypeOfMedium.CD) &&
+            !medium.getType().equals(TypeOfMedium.DVD)){
             throw new IllegalArgumentException("Wrong type of medium.");
         }
         
@@ -76,7 +76,7 @@ public class MediumManagerImpl implements MediumManager {
             logger.log(Level.SEVERE,"Error: when inserting a Medium into DB");
             throw new RunTimeFailureException("Error: when inserting Medium into DB  - " + medium,ex);
         } finally{
-            closeQuietly(st);
+            Utils.closeQuietly(conn);
         }
         
     }

@@ -15,9 +15,7 @@ public class StorageManagerImpl implements StorageManager {
     
     public StorageManagerImpl(DataSource datasource){
         this.datasource = datasource;
-    }
-
-    
+    }   
     
     
     @Override

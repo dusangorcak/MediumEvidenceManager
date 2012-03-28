@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.sql.DataSource;
+import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,9 +16,8 @@ import org.junit.Test;
 /**
  *
  * @author Tomas Marton
- * dusko je curacik
- * dusik je curan najvacsi
  */
+
 public class MediumManagerTest {
     
     private MediumManagerImpl manager;
@@ -39,8 +39,18 @@ public class MediumManagerTest {
                 + "TYPE VARCHAR(5) NOT NULL )").executeUpdate();
         }finally{
             Utils.closeQuietly(conn);
+        }           
+    }
+    
+    @After
+    public void tearDown() throws SQLException {
+        Connection conn = null;
+        try{
+            conn = dataSource.getConnection();                    
+            conn.prepareStatement("DROP TABLE MEDIUM").executeUpdate();
+        }finally{
+            Utils.closeQuietly(conn);
         }        
-        
     }
     
     @Test
