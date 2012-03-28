@@ -1,5 +1,4 @@
 
-
 import java.sql.*;
 import java.sql.Connection;
 import java.util.logging.Level;
@@ -16,10 +15,6 @@ public class StorageManagerImpl implements StorageManager {
     
     public StorageManagerImpl(DataSource datasource){
         this.datasource = datasource;
-    }
-
-    public StorageManagerImpl() {
-        
     }
 
     

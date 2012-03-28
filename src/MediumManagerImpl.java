@@ -13,14 +13,15 @@ public class MediumManagerImpl implements MediumManager {
     
     public static final Logger logger = Logger.getLogger(MediumManagerImpl.class.getName());
     private DataSource datasource;
+
+    MediumManagerImpl(DataSource dataSource) {
+        this.datasource = dataSource;
+    }   
     
-    void SetDataSource(DataSource ds) {
-        this.datasource = ds;
-    }
     
     
-        @Override
-        public void createMedium(Medium medium) throws IllegalArgumentException {
+    @Override
+    public void createMedium(Medium medium) throws IllegalArgumentException {
         if(medium == null){
             throw new IllegalArgumentException("medium is null");
         }        

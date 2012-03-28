@@ -16,22 +16,14 @@ import org.junit.Test;
 public class StorageManagerTest {
     
     private StorageManagerImpl storage;
-    private DataSource dataSource;    
-    
-
-    private DataSource prepareDataSource() throws SQLException{        
-        BasicDataSource ds = new BasicDataSource();
-        ds.setUrl("jdbc:derby:memory:StorageManagerTest;create=true");
-        System.err.println("prepare dataSource: " + ds);
-        return ds;        
-    }
+    private DataSource dataSource;        
         
     @Before
     public void setUp() throws SQLException {        
-        dataSource = prepareDataSource();
+        dataSource = Utils.prepareDataSource();
+        storage = new StorageManagerImpl(dataSource);
         Connection conn = null;
-        try{
-            System.err.println(dataSource);
+        try{            
             conn = dataSource.getConnection();
             conn.prepareStatement("CREATE TABLE STORAGE ("
                     + "id bigint not null primary key generated always as identity,"
@@ -39,8 +31,7 @@ public class StorageManagerTest {
                     + "address varchar(50) not null)").executeUpdate();
         }finally{
             Utils.closeQuietly(conn);
-        }
-        storage = new StorageManagerImpl(dataSource);
+        }        
     }
     
     @After

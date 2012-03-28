@@ -1,10 +1,13 @@
 
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javax.sql.DataSource;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +19,26 @@ import org.junit.Test;
 public class MediumManagerTest {
     
     private MediumManagerImpl manager;
+    private DataSource dataSource;
     
     @Before
-    public void setUp() {
-        manager = new MediumManagerImpl();
+    public void setUp() throws SQLException{
+        dataSource = Utils.prepareDataSource();
+        manager = new MediumManagerImpl(dataSource);
+        Connection conn = null;
+        try{
+            conn = dataSource.getConnection();
+            conn.prepareStatement("CREATE TABLE MEDIUM("
+                + "ID BIGINT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,"
+                + "NAME VARCHAR(50) NOT NULL,"
+                + "AUTHOR VARCHAR(50) NOT NULL,"
+                + "GENRE VARCHAR(50) NOT NULL,"
+                + "PRICE INT,"
+                + "TYPE VARCHAR(5) NOT NULL )").executeUpdate();
+        }finally{
+            Utils.closeQuietly(conn);
+        }        
+        
     }
     
     @Test
