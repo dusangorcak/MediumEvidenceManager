@@ -73,42 +73,16 @@ public class MediumManagerImpl implements MediumManager {
             }
             
             ResultSet rs = st.getGeneratedKeys();
-            medium.setId(getKey(rs,medium));
+            medium.setId(Utils.getKey(rs,medium));
         } catch(SQLException ex){
             logger.log(Level.SEVERE,"Error: when inserting a Medium into DB");
             throw new RunTimeFailureException("Error: when inserting Medium into DB  - " + medium,ex);
         } finally{
-            Utils.closeQuietly(conn);
+            Utils.closeQuietly(conn,st);
         }
         
-    }
-        
-        
-    private void closeQuietly(PreparedStatement st) {
-        if(st != null){
-            try{
-                st.close();
-            } catch(SQLException ex){
-                logger.log(Level.SEVERE, null, ex);
-            }
-        }
-    }
+    }    
     
-        
-        private Long getKey(ResultSet rs,Medium medium) throws SQLException,RunTimeFailureException{
-        if(rs.next()){
-            if(rs.getMetaData().getColumnCount() != 1){
-                throw new RunTimeFailureException("Error: generating keys -  wrong keys count " + medium);
-            }
-            Long key = rs.getLong(1);
-            if(rs.next()){
-                throw new RunTimeFailureException("Error: generating keys - more keys found " + medium);
-            }
-            return key;
-        } else {
-            throw new RunTimeFailureException("Error: generating keys - no key found " + medium );
-        }
-    }
     
     @Override
     public void deleteMedium(Medium med) throws IllegalArgumentException{
@@ -162,7 +136,7 @@ public class MediumManagerImpl implements MediumManager {
             logger.log(Level.SEVERE,"Error: when deleting Medium - " + med);
             throw new RunTimeFailureException("Error: when deleting Medium - " + med,ex);
         } finally{
-            Utils.closeQuietly(conn);
+            Utils.closeQuietly(conn,st);
         }
     }
     
@@ -187,15 +161,15 @@ public class MediumManagerImpl implements MediumManager {
             ResultSet rs = st.executeQuery();
             
             if (rs.next()) {
-                Medium med = resultSetToMedium(rs);
+                Medium medium = Utils.resultSetToMedium(rs);
 
                 if (rs.next()) {
                     throw new RunTimeFailureException(
                             "Internal error: More entities with the same id found "
-                            + "(source id: " + id + ", found " + med+ " and " + resultSetToMedium(rs));                    
+                            + "(source id: " + id + ", found " + medium+ " and " + Utils.resultSetToMedium(rs));                    
                 }            
                 
-                return med;
+                return medium;
             } else {
                 return null;
             }
@@ -205,29 +179,9 @@ public class MediumManagerImpl implements MediumManager {
             throw new RunTimeFailureException(
                     "Error when retrieving medium with id " + id, ex);
         } finally {
-            Utils.closeQuietly(conn);
+            Utils.closeQuietly(conn,st);
         }
-    }
-    
-    
-    private Medium resultSetToMedium(ResultSet rs) throws SQLException {
-        Medium medium = new Medium();
-        medium.setId(rs.getLong("id"));
-        medium.setName(rs.getString("name"));
-        medium.setAuthor(rs.getString("author"));
-        medium.setGenre(rs.getString("genre"));
-        medium.setPrice(rs.getBigDecimal("price"));
-        medium.setType(getEnum(rs.getString("type")));
-        return medium;
-        //tomas
-    }
-    
-    private TypeOfMedium getEnum(String type) {
-        if(type.equals("BOOK")) return TypeOfMedium.BOOK;
-        if(type.equals("DVD")) return TypeOfMedium.DVD;
-        if(type.equals("CD")) return TypeOfMedium.CD;
-        return null;        
-    }
+    }     
     
     @Override
     public List<Medium> getAllMediums() throws IllegalArgumentException {
@@ -241,7 +195,7 @@ public class MediumManagerImpl implements MediumManager {
             
             List<Medium> result = new ArrayList<Medium>();
             while (rs.next()) {
-                result.add(resultSetToMedium(rs));
+                result.add(Utils.resultSetToMedium(rs));
             }
             return result;
             
@@ -312,7 +266,7 @@ public class MediumManagerImpl implements MediumManager {
             logger.log(Level.SEVERE, "Error: when deleting medium -{0}", medium);
             throw new RunTimeFailureException("Error: deleting medium - " + medium,ex);
         } finally{
-            Utils.closeQuietly(conn);
+            Utils.closeQuietly(conn,st);
         }
     }
 }

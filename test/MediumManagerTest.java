@@ -1,5 +1,4 @@
 
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,6 +25,16 @@ public class MediumManagerTest {
     @Before
     public void setUp() throws SQLException{
         dataSource = Utils.prepareDataSource();
+        Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("CreateTables.sql"));     
+        manager = new MediumManagerImpl(dataSource);        
+    }
+    
+    @After
+    public void tearDown() throws SQLException {
+        Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("DropTables.sql"));      
+    }
+    /*public void setUp() throws SQLException{
+        dataSource = Utils.prepareDataSource();
         manager = new MediumManagerImpl(dataSource);
         Connection conn = null;
         try{
@@ -51,7 +60,7 @@ public class MediumManagerTest {
         }finally{
             Utils.closeQuietly(conn);
         }        
-    }
+    }*/
     
     @Test
     public void createMedium(){
