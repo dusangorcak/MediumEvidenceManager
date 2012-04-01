@@ -25,7 +25,8 @@ public class MediumManagerTest {
     @Before
     public void setUp() throws SQLException{
         dataSource = Utils.prepareDataSource();
-        Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("CreateTables.sql"));     
+        //Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("CreateTables.sql"));
+        Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("CreateTables.sql"));
         manager = new MediumManagerImpl(dataSource);        
     }
     
