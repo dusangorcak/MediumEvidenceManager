@@ -19,13 +19,7 @@ public class Storage {
         return id;
     }
 
-  /*  public Storage(Long id, int capacity, String address) {
-        this.id = id;
-        this.capacity = capacity;
-        this.address = address;
-    }*/
-
-    public void setAddress(String address) {
+     public void setAddress(String address) {
         this.address = address;
     }
 

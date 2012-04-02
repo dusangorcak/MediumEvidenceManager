@@ -2,7 +2,6 @@
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;

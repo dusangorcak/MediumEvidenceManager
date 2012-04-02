@@ -3,7 +3,9 @@ import java.util.List;
 
 
 /**
- *
+ ** This service allows to manipulate with associations between mediums and 
+ * storages.
+ * 
  * @author Tomas
  */
 public interface EvidenceManager {

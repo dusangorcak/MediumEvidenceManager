@@ -26,13 +26,13 @@ public class MediumManagerTest {
     public void setUp() throws SQLException{
         dataSource = Utils.prepareDataSource();
         //Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("CreateTables.sql"));
-        Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("CreateTables.sql"));
+        Utils.executeSqlScript(dataSource, EvidenceManager.class.getResource("CreateTables.sql"));
         manager = new MediumManagerImpl(dataSource);        
     }
     
     @After
     public void tearDown() throws SQLException {
-        Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("DropTables.sql"));      
+        Utils.executeSqlScript(dataSource, EvidenceManager.class.getResource("DropTables.sql"));      
     }
     /*public void setUp() throws SQLException{
         dataSource = Utils.prepareDataSource();
