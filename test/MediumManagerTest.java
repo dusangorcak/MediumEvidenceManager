@@ -22,19 +22,19 @@ public class MediumManagerTest {
     private MediumManagerImpl manager;
     private DataSource dataSource;
     
-    @Before
+    /*@Before
     public void setUp() throws SQLException{
         dataSource = Utils.prepareDataSource();
-        //Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("CreateTables.sql"));
-        Utils.executeSqlScript(dataSource, EvidenceManager.class.getResource("CreateTables.sql"));
+        Utils.executeSqlScript(dataSource, MediumManagerImpl.class.getResource("CreateTables.sql"));
+        //Utils.executeSqlScript(dataSource, EvidenceManager.class.getResource("CreateTables.sql"));
         manager = new MediumManagerImpl(dataSource);        
     }
     
     @After
     public void tearDown() throws SQLException {
-        Utils.executeSqlScript(dataSource, EvidenceManager.class.getResource("DropTables.sql"));      
-    }
-    /*public void setUp() throws SQLException{
+        Utils.executeSqlScript(dataSource, MediumManagerImpl.class.getResource("DropTables.sql"));      
+    }*/
+    public void setUp() throws SQLException{
         dataSource = Utils.prepareDataSource();
         manager = new MediumManagerImpl(dataSource);
         Connection conn = null;
@@ -61,7 +61,7 @@ public class MediumManagerTest {
         }finally{
             Utils.closeQuietly(conn);
         }        
-    }*/
+    }
     
     @Test
     public void createMedium(){

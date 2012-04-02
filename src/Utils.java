@@ -79,7 +79,7 @@ public class Utils {
         return ds;        
     }
     
-    private static String[] readSQLStatement(URL sqlUrl){        
+    private static String[] readSQLStatement(URL sqlUrl){
         try{
             char[] buffer = new char[256];
             StringBuilder result = new StringBuilder();
@@ -95,7 +95,7 @@ public class Utils {
         }
     }
     
-    public static void executeSqlScript(DataSource dataSource, URL url) throws SQLException{        
+    public static void executeSqlScript(DataSource dataSource, URL url) throws SQLException{ 
         Connection conn= null;
         try{
             conn = dataSource.getConnection();
