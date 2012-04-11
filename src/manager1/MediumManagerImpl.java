@@ -81,7 +81,7 @@ public class MediumManagerImpl implements MediumManager {
             
             int addedRows = st.executeUpdate();
             if(addedRows != 1){
-                throw new RunTimeFailureException("Error:  when insertingtomi a medium into DB - " + medium);
+                throw new RunTimeFailureException("Error:  when inserting a medium into DB - " + medium);
             }
             
             ResultSet rs = st.getGeneratedKeys();

@@ -40,11 +40,11 @@ public class Storage {
     }
 
     public void setActualCapacity(int actualCapacity) {
+        if(this.getActualCapacity() > this.getCapacity())
+            throw new RunTimeFailureException("Error: Actual capacity cannot be greater than capacity");
         this.actualCapacity = actualCapacity;
     }
     
-    
-
     public String getAddress() {
         return address;
     }

@@ -82,6 +82,9 @@ public class EvidenceManagerImpl implements EvidenceManager{
         if(storage.getId() == null)
             throw new IllegalEntityException("storage.id is null");
         
+        if(storage.getCapacity() == storage.getActualCapacity())
+            throw new IllegalEntityException("storage is full");
+        
         if(medium == null) 
             throw new IllegalArgumentException("medium is null");
             
@@ -102,7 +105,17 @@ public class EvidenceManagerImpl implements EvidenceManager{
              if(count != 1){
                 throw new IllegalEntityException("Error: when inserting a Medium into Storage :" + medium + " " + storage );
              }
+             
+             st = conn.prepareStatement("UPDATE Storage SET actualCapacity = ? WHERE id = ?");
+             st.setInt(1, storage.getActualCapacity() + 1);
+             st.setLong(2, storage.getId());
+             count = st.executeUpdate();
+           
+             if(count != 1){
+                throw new IllegalEntityException("Error: when inserting a Medium into Storage :" + medium + " " + storage ); 
+             }
              medium.setStorageID(storage.getId());
+             storage.setActualCapacity(storage.getActualCapacity() +1);
          }catch(SQLException ex){
             String msg = "Error: when inserting medium into storage" + medium + " " + storage;
             medium.setStorageID(null);
