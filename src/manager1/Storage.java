@@ -1,3 +1,5 @@
+package manager1;
+
 
 
 /**
@@ -12,6 +14,7 @@ public class Storage {
     
     private Long id;
     private int capacity;
+    private int actualCapacity;
     private String address;
 
         
@@ -31,6 +34,16 @@ public class Storage {
         if(this.id == null) this.id = id;
         else throw new IllegalArgumentException(" Error: Id set multiple times");
     }
+
+    public int getActualCapacity() {
+        return actualCapacity;
+    }
+
+    public void setActualCapacity(int actualCapacity) {
+        this.actualCapacity = actualCapacity;
+    }
+    
+    
 
     public String getAddress() {
         return address;

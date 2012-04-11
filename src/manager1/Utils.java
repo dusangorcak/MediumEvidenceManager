@@ -1,3 +1,5 @@
+package manager1;
+
 
 
 import java.io.IOException;
@@ -55,6 +57,19 @@ public class Utils {
         }
     }
     
+     public static void doRollbackQuietly(Connection conn) {
+        if (conn != null) {
+            try {
+                if (conn.getAutoCommit()) {
+                    throw new IllegalStateException("Connection is in the autocommit mode!");
+                }
+                conn.rollback();
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Error when doing rollback", ex);
+            }
+        }
+    }
+    
     public static Medium resultSetToMedium(ResultSet rs) throws SQLException {
         Medium medium = new Medium();
         medium.setId(rs.getLong("id"));
@@ -66,6 +81,15 @@ public class Utils {
         return medium;
     }
     
+    public static Storage resultSetToStorage(ResultSet rs) throws SQLException {
+        Storage storage = new Storage();
+                
+        storage.setId(rs.getLong("id"));
+        storage.setCapacity(rs.getInt("capacity"));
+        storage.setAddress(rs.getString("address"));
+        return storage;
+    }
+    
     private  static TypeOfMedium getEnum(String type) {
         if(type.equals("BOOK")) return TypeOfMedium.BOOK;
         if(type.equals("DVD")) return TypeOfMedium.DVD;
@@ -73,53 +97,58 @@ public class Utils {
         return null;        
     }
     
-    public static DataSource prepareDataSource() throws SQLException{        
-        BasicDataSource ds = new BasicDataSource();
-        ds.setUrl("jdbc:derby:memory:EvidenceManagerTest;create=true");
-        return ds;        
-    }
+   
     
-    private static String[] readSQLStatement(URL sqlUrl){
-        try{
-            char[] buffer = new char[256];
-            StringBuilder result = new StringBuilder();
-            InputStreamReader reader = new InputStreamReader(sqlUrl.openStream(), "UTF-8");
-            while(true){
-                int count = reader.read(buffer);
-                if(count < 0) break;
-                result.append(buffer, 0, count);
-            }
-            return result.toString().split(";");
-        }catch(IOException ex){
-            throw new RuntimeException("Cannot read" + sqlUrl, ex);
-        }
-    }
     
-    public static void executeSqlScript(DataSource dataSource, URL url) throws SQLException{ 
-        Connection conn= null;
-        try{
-            conn = dataSource.getConnection();
-            for(String sqlStatement : readSQLStatement(url)){
-                if(!sqlStatement.trim().isEmpty()){
+    
+    public static void executeSqlScript(DataSource ds, URL scriptUrl) throws SQLException{        
+        Connection conn = null;
+        try {
+            conn = ds.getConnection();
+            
+            for (String sqlStatement : readSqlStatements(scriptUrl)) {
+                if (!sqlStatement.trim().isEmpty()) {
+                    System.out.println("Executing statement: " + sqlStatement);
                     conn.prepareStatement(sqlStatement).executeUpdate();
                 }
             }
-            
-        } finally{
-            Utils.closeQuietly(conn);
+        } finally {
+            closeQuietly(conn);
         }
     }
     
-    public static void tryCreateTables(DataSource datasource,URL scriptUrl) throws SQLException{
-        try{
-            executeSqlScript(datasource,scriptUrl);
+    private static String[] readSqlStatements(URL url) {
+        try {
+            char buffer[] = new char[256];
+            StringBuilder result = new StringBuilder();
+            InputStreamReader reader = new InputStreamReader(url.openStream(), "UTF-8");
+            while (true) {
+                int count = reader.read(buffer);
+                if (count < 0) {
+                    break;
+                }
+                result.append(buffer, 0, count);
+            }
+            return result.toString().split(";");
+        } catch (IOException ex) {
+            throw new RuntimeException("Cannot read " + url, ex);
+        }
+    }
+    
+    public static void tryCreateTables(DataSource ds, URL scriptUrl) throws SQLException {
+        try {
+            executeSqlScript(ds, scriptUrl);
             logger.warning("Tables created");
-        }catch(SQLException ex){
-            if("X0Y32".equals(ex.getSQLState())){ /// databazovo specificke pre derby hodi ak su tabulky uz vytvorene
+        } catch (SQLException ex) {
+            if ("X0Y32".equals(ex.getSQLState())) {
+                // This code represents "Table/View/... already exists"
+                // This code is Derby specific!
                 return;
-            }else{
+            } else {
                 throw ex;
             }
         }
     }
+    
+    
 }

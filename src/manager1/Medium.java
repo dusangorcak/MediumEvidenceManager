@@ -1,10 +1,13 @@
+package manager1;
+
 
 import java.math.BigDecimal;
 
 
 
 public class Medium {
-    private Long id;    
+    private Long id;   
+    private Long storageID;    
     private String name;
     private String author;
     private String genre;
@@ -34,6 +37,14 @@ public class Medium {
     public TypeOfMedium getType() {
         return type;
     }
+    
+    public Long getStorageID() {
+        return storageID;
+    }
+
+    public void setStorageID(Long storageID) {
+        this.storageID = storageID;
+    }
 
     public void setAuthor(String author) {
         this.author = author;
@@ -60,6 +71,8 @@ public class Medium {
     public void setType(TypeOfMedium type) {
         this.type = type;
     }
+    
+    
 
     @Override
     public boolean equals(Object obj) {
@@ -85,7 +98,7 @@ public class Medium {
 
     @Override
     public String toString() {
-        return "Medium{" + "id=" + id + ", name=" + name + ", author=" + author + ", genre=" + genre + ", price=" + price + ", type=" + type + '}';
+        return "Medium{" + "id=" + id + ", storageId=" + storageID +  ", name=" + name + ", author=" + author + ", genre=" + genre + ", price=" + price + ", type=" + type + '}';
     }
     
     

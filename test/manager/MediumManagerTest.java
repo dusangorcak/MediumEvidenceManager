@@ -1,4 +1,11 @@
+package manager;
 
+
+import manager1.MediumManagerImpl;
+import manager1.TypeOfMedium;
+import manager1.Utils;
+import manager1.EvidenceManager;
+import manager1.Medium;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -7,6 +14,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.sql.DataSource;
+import manager1.*;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -20,53 +29,35 @@ import org.junit.Test;
 public class MediumManagerTest {
     
     private MediumManagerImpl manager;
+    private StorageManagerImpl storageManager;
+    private Storage storage;
     private DataSource dataSource;
     
-    /*@Before
+    private static DataSource prepareDataSource() throws SQLException {
+        BasicDataSource ds = new BasicDataSource();
+        //we will use in memory database
+        ds.setUrl("jdbc:derby:memory:MediumManagerTest;create=true");       
+        return ds;
+    }
+    
+    @Before
     public void setUp() throws SQLException{
-        dataSource = Utils.prepareDataSource();
-        Utils.executeSqlScript(dataSource, MediumManagerImpl.class.getResource("CreateTables.sql"));
-        //Utils.executeSqlScript(dataSource, EvidenceManager.class.getResource("CreateTables.sql"));
-        manager = new MediumManagerImpl(dataSource);        
+        dataSource = prepareDataSource();        
+        Utils.executeSqlScript(dataSource, EvidenceManagerTests.class.getResource("CreateTables.sql"));
+        manager = new MediumManagerImpl();
+        manager.setDataSource(dataSource);
+        
     }
     
     @After
     public void tearDown() throws SQLException {
-        Utils.executeSqlScript(dataSource, MediumManagerImpl.class.getResource("DropTables.sql"));      
-    }*/
-    public void setUp() throws SQLException{
-        dataSource = Utils.prepareDataSource();
-        manager = new MediumManagerImpl(dataSource);
-        Connection conn = null;
-        try{
-            conn = dataSource.getConnection();
-            conn.prepareStatement("CREATE TABLE MEDIUM("
-                + "ID BIGINT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,"
-                + "NAME VARCHAR(50) NOT NULL,"
-                + "AUTHOR VARCHAR(50) NOT NULL,"
-                + "GENRE VARCHAR(50) NOT NULL,"
-                + "PRICE DECIMAL(5,2),"
-                + "TYPE VARCHAR(5) NOT NULL )").executeUpdate();
-        }finally{
-            Utils.closeQuietly(conn);
-        }           
-    }
-    
-    @After
-    public void tearDown() throws SQLException {
-        Connection conn = null;
-        try{
-            conn = dataSource.getConnection();                    
-            conn.prepareStatement("DROP TABLE MEDIUM").executeUpdate();
-        }finally{
-            Utils.closeQuietly(conn);
-        }        
+        Utils.executeSqlScript(dataSource, EvidenceManagerTests.class.getResource("DropTables.sql"));      
     }
     
     @Test
     public void createMedium(){
         BigDecimal price = new BigDecimal("200.00");
-        Medium medium = newMedium("Java","XY","Programming",price,TypeOfMedium.DVD);
+        Medium medium = newMedium("Java","XY","Programming",price,TypeOfMedium.DVD);        
         manager.createMedium(medium);
         
         Long mediumId = medium.getId();
@@ -378,6 +369,8 @@ public class MediumManagerTest {
         
         return medium;
     }
+    
+    
     
     private static void assertDeepEquals(Medium expected, Medium actual){
         assertEquals(expected.getAuthor(), actual.getAuthor());

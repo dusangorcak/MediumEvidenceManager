@@ -1,3 +1,5 @@
+package manager1;
+
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -6,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 
 /**
  *
@@ -14,13 +17,20 @@ import javax.sql.DataSource;
 public class MediumManagerImpl implements MediumManager {    
     
     public static final Logger logger = Logger.getLogger(MediumManagerImpl.class.getName());
-    private DataSource datasource;
-
+    private static DataSource datasource;
+    
+    
     MediumManagerImpl(DataSource dataSource) {
         this.datasource = dataSource;
     }   
     
+    public void setDataSource(DataSource dataSource) {
+        this.datasource = dataSource;
+    }
     
+    public MediumManagerImpl(){
+        
+    }
     
     @Override
     public void createMedium(Medium medium) throws IllegalArgumentException {
@@ -30,6 +40,7 @@ public class MediumManagerImpl implements MediumManager {
         if(medium.getId() != null){
             throw new IllegalArgumentException("medium has allready set id");
         }        
+                
         if(medium.getAuthor() == null || medium.getAuthor().trim().isEmpty()){
             throw new IllegalArgumentException("Author has to be set.");
         }        
@@ -59,17 +70,18 @@ public class MediumManagerImpl implements MediumManager {
         Connection conn = null;
         try{
             conn = datasource.getConnection();
-            st = conn.prepareStatement("INSERT INTO MEDIUM(NAME, AUTHOR, GENRE, PRICE, TYPE) VALUES (?,?,?,?,?)",
+            st = conn.prepareStatement(
+                    "INSERT INTO MEDIUM(NAME, AUTHOR, GENRE, PRICE, TYPE) VALUES (?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS);
             st.setString(1, medium.getName());
             st.setString(2, medium.getAuthor());
             st.setString(3, medium.getGenre());
             st.setBigDecimal(4, medium.getPrice());
             st.setString(5, medium.getType().toString());
-
+            
             int addedRows = st.executeUpdate();
             if(addedRows != 1){
-                throw new RunTimeFailureException("Error:  when inserting a medium into DB - " + medium);
+                throw new RunTimeFailureException("Error:  when insertingtomi a medium into DB - " + medium);
             }
             
             ResultSet rs = st.getGeneratedKeys();
@@ -79,11 +91,9 @@ public class MediumManagerImpl implements MediumManager {
             throw new RunTimeFailureException("Error: when inserting Medium into DB  - " + medium,ex);
         } finally{
             Utils.closeQuietly(conn,st);
-        }
-        
+        }        
     }    
-    
-    
+ 
     @Override
     public void deleteMedium(Medium med) throws IllegalArgumentException{
         if(med == null){

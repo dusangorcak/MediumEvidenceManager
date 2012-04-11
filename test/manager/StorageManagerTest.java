@@ -1,7 +1,14 @@
+package manager;
 
+
+import manager1.Storage;
+import manager1.Utils;
+import manager1.StorageManagerImpl;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import manager1.MediumManagerImpl;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -16,9 +23,30 @@ public class StorageManagerTest {
     private StorageManagerImpl storage;
     private DataSource dataSource;        
         
+    private static DataSource prepareDataSource() throws SQLException {
+        BasicDataSource ds = new BasicDataSource();
+        //we will use in memory database
+        ds.setUrl("jdbc:derby:memory:StorageManagerTest;create=true");
+        //ds.setUrl("jdbc:derby://localhost:1527/test");
+        return ds;
+    }
+    
     @Before
+    public void setUp() throws SQLException{
+        dataSource = prepareDataSource();
+        //Utils.executeSqlScript(dataSource, MediaEvidenceManager.class.getResource("CreateTables.sql"));
+        Utils.executeSqlScript(dataSource, EvidenceManagerTests.class.getResource("CreateTables.sql"));
+        storage = new StorageManagerImpl(dataSource);                
+    }
+    
+    @After
+    public void tearDown() throws SQLException {
+        Utils.executeSqlScript(dataSource, EvidenceManagerTests.class.getResource("DropTables.sql"));      
+    }
+    
+    /*@Before
     public void setUp() throws SQLException {        
-        dataSource = Utils.prepareDataSource();
+        dataSource = prepareDataSource();
         storage = new StorageManagerImpl(dataSource);
         Connection conn = null;
         try{            
@@ -41,7 +69,7 @@ public class StorageManagerTest {
         }finally{
             Utils.closeQuietly(conn);
         }        
-    }
+    }*/
         
     /**
      * Test of createStorage method, of class StorageManager.

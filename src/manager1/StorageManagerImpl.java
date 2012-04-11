@@ -1,3 +1,5 @@
+package manager1;
+
 
 import java.sql.*;
 import java.sql.Connection;
@@ -15,7 +17,11 @@ public class StorageManagerImpl implements StorageManager {
     
     public StorageManagerImpl(DataSource datasource){
         this.datasource = datasource;
-    }   
+    }
+
+   public  StorageManagerImpl() {
+        
+    }
     
     
     @Override
@@ -195,6 +201,10 @@ public class StorageManagerImpl implements StorageManager {
         } finally{
             Utils.closeQuietly(conn);
         }
+    }
+
+    public void setDataSource(DataSource ds) {
+        this.datasource = ds;
     }
     
     
