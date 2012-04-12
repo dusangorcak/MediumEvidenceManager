@@ -41,15 +41,16 @@ public class EvidenceManagerImpl implements EvidenceManager{
         if(medium.getId() == null)
             throw new IllegalEntityException("id is null " + medium);
         
+        if(medium.getStorageID() == null)
+            throw new IllegalEntityException("storage is is null" + medium);
+        
         Connection conn = null;
         PreparedStatement st = null;        
         try {
              conn = dataSource.getConnection();
              st = conn.prepareStatement(
-                    "SELECT storage.id, capacity, address" +
-                    "FROM storage JOIN medium ON storage.id = medium.storageId " +
-                    "WHERE medium.id = ?");
-             st.setLong(1, medium.getId());
+                    "SELECT id, capacity, address FROM Storage WHERE id = ?");
+             st.setLong(1, medium.getStorageID());
              ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 Storage result = Utils.resultSetToStorage(rs);                
@@ -223,9 +224,9 @@ public class EvidenceManagerImpl implements EvidenceManager{
         try {
             checkSt = conn.prepareStatement(
                     "SELECT capacity, COUNT(Medium.id) as mediumsCount " +
-                    "FROM Medium LEFT JOIN Storage ON Storage.id = Medium.storageId " +
+                    "FROM Storage LEFT JOIN Medium ON Storage.id = Medium.storageId " +
                     "WHERE Storage.id = ? " +
-                    "GROUP BY Medium.id, capacity");
+                    "GROUP BY Storage.id, capacity");
             checkSt.setLong(1, storage.getId());
             ResultSet rs = checkSt.executeQuery();
             if (rs.next()) {

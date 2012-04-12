@@ -64,4 +64,11 @@ public class Storage {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "Storage{" + "id=" + id + ", capacity=" + capacity + ", address=" + address + '}';
+    }
+    
+    
 }

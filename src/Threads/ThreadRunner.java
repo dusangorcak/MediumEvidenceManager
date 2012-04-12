@@ -1,7 +1,6 @@
 
 package Threads;
 
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -12,17 +11,15 @@ public class ThreadRunner implements Runnable{
     
     public ThreadRunner(String name){
         this.name = name;
-    }
+    }    
     
-    /*
-    @Override
+    /*@Override
     public void run(){
         while(counter.get() <=50){
             System.out.println(this.name + "  " + counter.getAndIncrement());
-        }
-        
-    }
-    */
+        }               
+    }*/
+
     @Override
     public void run(){
         int temp = 0;
@@ -42,7 +39,7 @@ public class ThreadRunner implements Runnable{
         for(int i = 0; i < 3; i++){
             ThreadRunner runner = new ThreadRunner("Thread " + i);
             Thread thread = new Thread(runner);
-            thread.start();
-        }
+            thread.start();            
+        }        
     }
 }
