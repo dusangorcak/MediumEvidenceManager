@@ -1,7 +1,5 @@
 package manager1;
 
-
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -24,6 +22,11 @@ public class Utils {
     
     public static void closeQuietly(Connection conn, Statement ... statements) {
         if(conn != null){
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Error when switching autocommit mode back to true", ex);
+            }
             try{
                 conn.close();
             } catch(SQLException ex){

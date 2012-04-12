@@ -14,7 +14,6 @@ public class Storage {
     
     private Long id;
     private int capacity;
-    private int actualCapacity;
     private String address;
 
         
@@ -33,16 +32,6 @@ public class Storage {
     public void setId(Long id) {
         if(this.id == null) this.id = id;
         else throw new IllegalArgumentException(" Error: Id set multiple times");
-    }
-
-    public int getActualCapacity() {
-        return actualCapacity;
-    }
-
-    public void setActualCapacity(int actualCapacity) {
-        if(this.getActualCapacity() > this.getCapacity())
-            throw new RunTimeFailureException("Error: Actual capacity cannot be greater than capacity");
-        this.actualCapacity = actualCapacity;
     }
     
     public String getAddress() {

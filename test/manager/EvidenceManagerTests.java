@@ -96,7 +96,7 @@ public class EvidenceManagerTests {
         assertNull(manager.findStorageOfMedium(m4));
         assertNull(manager.findStorageOfMedium(m5));
         
-        manager.putMediumIntoStorage(m1, s3);
+        manager.insertMediumIntoStorage(m1, s3);
 
         assertEquals(s3, manager.findStorageOfMedium(m1));
         assertStorageDeepEquals(s3, manager.findStorageOfMedium(m1));
@@ -124,9 +124,9 @@ public class EvidenceManagerTests {
         List<Storage> emptyStorages = Arrays.asList(s1,s2,s3);
         
         
-        manager.putMediumIntoStorage(m1, s3);
-        manager.putMediumIntoStorage(m3, s3);
-        manager.putMediumIntoStorage(m5, s1);
+        manager.insertMediumIntoStorage(m1, s3);
+        manager.insertMediumIntoStorage(m3, s3);
+        manager.insertMediumIntoStorage(m5, s1);
 
         emptyStorages = Arrays.asList(s2);
         assertStorageCollectionDeepEquals(emptyStorages, manager.getAllFreeStorages());
@@ -143,10 +143,10 @@ public class EvidenceManagerTests {
     @Test
     public void removeMediumFromStorage() throws RunTimeFailureException, IllegalEntityException {
 
-        manager.putMediumIntoStorage(m1, s3);
-        manager.putMediumIntoStorage(m3, s3);
-        manager.putMediumIntoStorage(m4, s3);
-        manager.putMediumIntoStorage(m5, s1);
+        manager.insertMediumIntoStorage(m1, s3);
+        manager.insertMediumIntoStorage(m3, s3);
+        manager.insertMediumIntoStorage(m4, s3);
+        manager.insertMediumIntoStorage(m5, s1);
                 
         assertEquals(s3, manager.findStorageOfMedium(m1));
         assertNull(manager.findStorageOfMedium(m2));
@@ -212,7 +212,7 @@ public class EvidenceManagerTests {
     }
     
     @Test
-    public void putMediumIntoStorage() throws RunTimeFailureException, IllegalEntityException {
+    public void insertMediumIntoStorage() throws RunTimeFailureException, IllegalEntityException {
 
         assertNull(manager.findStorageOfMedium(m1));
         assertNull(manager.findStorageOfMedium(m2));
@@ -220,9 +220,9 @@ public class EvidenceManagerTests {
         assertNull(manager.findStorageOfMedium(m4));
         assertNull(manager.findStorageOfMedium(m5));
         
-        manager.putMediumIntoStorage(m1, s3);
-        manager.putMediumIntoStorage(m5, s1);
-        manager.putMediumIntoStorage(m3, s3);
+        manager.insertMediumIntoStorage(m1, s3);
+        manager.insertMediumIntoStorage(m5, s1);
+        manager.insertMediumIntoStorage(m3, s3);
 
                 
         assertEquals(s3, manager.findStorageOfMedium(m1));
@@ -235,48 +235,48 @@ public class EvidenceManagerTests {
         assertStorageDeepEquals(s1, manager.findStorageOfMedium(m5));
     
         try {
-            manager.putMediumIntoStorage(m1, s3);
+            manager.insertMediumIntoStorage(m1, s3);
             fail();
         } catch (IllegalEntityException ex) {}
 
         try {
-            manager.putMediumIntoStorage(m1, s2);
+            manager.insertMediumIntoStorage(m1, s2);
             fail();
         } catch (IllegalEntityException ex) {}
 
         try {
-            manager.putMediumIntoStorage(null, s2);
+            manager.insertMediumIntoStorage(null, s2);
             fail();
         } catch (IllegalArgumentException ex) {}
 
         try {
-            manager.putMediumIntoStorage(MediumWithNullId, s2);
+            manager.insertMediumIntoStorage(MediumWithNullId, s2);
             fail();
         } catch (IllegalEntityException ex) {}
 
         try {
-            manager.putMediumIntoStorage(MediumNotInDB, s2);
+            manager.insertMediumIntoStorage(MediumNotInDB, s2);
             fail();
         } catch (IllegalEntityException ex) {}
 
         try {
-            manager.putMediumIntoStorage(m2, null);
+            manager.insertMediumIntoStorage(m2, null);
             fail();
         } catch (IllegalArgumentException ex) {}
 
         try {
-            manager.putMediumIntoStorage(m2, StorageWithNullId);
+            manager.insertMediumIntoStorage(m2, StorageWithNullId);
             fail();
         } catch (IllegalEntityException ex) {}
 
         try {
-            manager.putMediumIntoStorage(m2, StorageNotInDB);
+            manager.insertMediumIntoStorage(m2, StorageNotInDB);
             fail();
         } catch (IllegalEntityException ex) {}
 
         // Try to add body to grave that is already full
         try {
-            manager.putMediumIntoStorage(m2, s1);
+            manager.insertMediumIntoStorage(m2, s1);
             fail();
         } catch (IllegalEntityException ex) {}
 

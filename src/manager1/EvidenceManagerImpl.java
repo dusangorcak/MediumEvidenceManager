@@ -42,13 +42,12 @@ public class EvidenceManagerImpl implements EvidenceManager{
             throw new IllegalEntityException("id is null " + medium);
         
         Connection conn = null;
-        PreparedStatement st = null;
-        
+        PreparedStatement st = null;        
         try {
              conn = dataSource.getConnection();
              st = conn.prepareStatement(
-                    "SELECT storage.id, col, row, capacity, note " +
-                    "FROM storage JOIN ON medium.id = storage.storageId " +
+                    "SELECT storage.id, capacity, address" +
+                    "FROM storage JOIN medium ON storage.id = medium.storageId " +
                     "WHERE medium.id = ?");
              st.setLong(1, medium.getId());
              ResultSet rs = st.executeQuery();
@@ -80,10 +79,7 @@ public class EvidenceManagerImpl implements EvidenceManager{
             throw new IllegalArgumentException("storage is null");
         
         if(storage.getId() == null)
-            throw new IllegalEntityException("storage.id is null");
-        
-        if(storage.getCapacity() == storage.getActualCapacity())
-            throw new IllegalEntityException("storage is full");
+            throw new IllegalEntityException("storage.id is null");        
         
         if(medium == null) 
             throw new IllegalArgumentException("medium is null");
@@ -97,25 +93,18 @@ public class EvidenceManagerImpl implements EvidenceManager{
          
          try {             
              conn = dataSource.getConnection();
+             conn.setAutoCommit(false);
+             checkIfStorageHasSpace(conn, storage);
              st = conn.prepareStatement("UPDATE Medium SET storageId = ? WHERE id = ? AND storageId IS NULL");
              st.setLong(1, storage.getId());
              st.setLong(2, medium.getId());
-             int count = st.executeUpdate();
-             
+             int count = st.executeUpdate();             
              if(count != 1){
                 throw new IllegalEntityException("Error: when inserting a Medium into Storage :" + medium + " " + storage );
-             }
-             
-             st = conn.prepareStatement("UPDATE Storage SET actualCapacity = ? WHERE id = ?");
-             st.setInt(1, storage.getActualCapacity() + 1);
-             st.setLong(2, storage.getId());
-             count = st.executeUpdate();
-           
-             if(count != 1){
-                throw new IllegalEntityException("Error: when inserting a Medium into Storage :" + medium + " " + storage ); 
-             }
+             }            
              medium.setStorageID(storage.getId());
-             storage.setActualCapacity(storage.getActualCapacity() +1);
+             conn.commit();             
+             
          }catch(SQLException ex){
             String msg = "Error: when inserting medium into storage" + medium + " " + storage;
             medium.setStorageID(null);
@@ -123,8 +112,8 @@ public class EvidenceManagerImpl implements EvidenceManager{
             throw new RunTimeFailureException(msg, ex);     
                  
          } finally{
-             Utils.closeQuietly(conn, st);
              Utils.doRollbackQuietly(conn);
+             Utils.closeQuietly(conn, st);             
          }
      }
              
@@ -148,24 +137,28 @@ public class EvidenceManagerImpl implements EvidenceManager{
         
          Connection conn = null;
          PreparedStatement st = null;
+         long temp = medium.getStorageID();
          try{
              conn = dataSource.getConnection();
-             st = conn.prepareStatement("UPDATE Medium SET storageId = null WHERE id = ? AND storageId = ?");
+             conn.setAutoCommit(false);
+             st = conn.prepareStatement("UPDATE Medium SET storageId = NULL WHERE id = ? AND storageId = ?");
              st.setLong(1, medium.getId());
              st.setLong(2, storage.getId());
              int count = st.executeUpdate();
              if(count != 1){
                  throw new IllegalEntityException("Error: when removing medium from storage" + medium + " " + storage);
              }
+             conn.commit();
              medium.setStorageID(null);
          } catch(SQLException ex){
-            String msg = "Error: when removing medium from  storage" + medium + " " + storage;
+            String msg = "Error: when removing medium " + medium + " from  storage " + storage;
             logger.log(Level.SEVERE, msg, storage);
+            medium.setStorageID(temp);
             throw new RunTimeFailureException(msg, ex);     
                  
          } finally{
-             Utils.closeQuietly(conn, st);
              Utils.doRollbackQuietly(conn);
+             Utils.closeQuietly(conn, st);             
          }
     }
     
@@ -178,14 +171,13 @@ public class EvidenceManagerImpl implements EvidenceManager{
         try {
             conn = dataSource.getConnection();
             st = conn.prepareStatement(
-                    "SELECT storage.id, col, row, capacity, note " +
-                    "FROM storage LEFT JOIN medium ON storage.id = medium.graveId " +
-                    "GROUP BY storage.id, col, row, capacity, note " +
+                    "SELECT storage.id,storage.capacity,storage.address " +
+                    "FROM storage LEFT JOIN medium ON storage.id = medium.storageId " +
+                    "GROUP BY storage.id,storage.capacity,storage.address " +
                     "HAVING COUNT(medium.id) < capacity");
             
         
-        ResultSet rs = st.executeQuery();
-            
+            ResultSet rs = st.executeQuery();            
             List<Storage> result = new ArrayList<Storage>();
             while (rs.next()) {
                 result.add(Utils.resultSetToStorage(rs));
@@ -207,12 +199,8 @@ public class EvidenceManagerImpl implements EvidenceManager{
         PreparedStatement st = null;
         try {
             conn = dataSource.getConnection();
-            st = conn.prepareStatement(
-                    "SELECT storage.id, col, row, capacity, note " +
-                    "FROM storage LEFT JOIN medium ON storage.id = medium.graveId " +
-                    "GROUP BY storage.id, col, row, capacity, note ");
-                    
-        ResultSet rs = st.executeQuery();
+            st = conn.prepareStatement("SELECT id,capacity,address FROM storage ");                    
+            ResultSet rs = st.executeQuery();
             
             List<Storage> result = new ArrayList<Storage>();
             while (rs.next()) {
@@ -227,5 +215,28 @@ public class EvidenceManagerImpl implements EvidenceManager{
             Utils.closeQuietly(conn);
         }
         
+    }
+    
+    private static void checkIfStorageHasSpace(Connection conn, Storage storage) 
+            throws RunTimeFailureException, IllegalEntityException, SQLException {
+        PreparedStatement checkSt = null;
+        try {
+            checkSt = conn.prepareStatement(
+                    "SELECT capacity, COUNT(Medium.id) as mediumsCount " +
+                    "FROM Medium LEFT JOIN Storage ON Storage.id = Medium.storageId " +
+                    "WHERE Storage.id = ? " +
+                    "GROUP BY Medium.id, capacity");
+            checkSt.setLong(1, storage.getId());
+            ResultSet rs = checkSt.executeQuery();
+            if (rs.next()) {
+                if (rs.getInt("capacity") <= rs.getInt("mediumsCount")) {
+                    throw new RunTimeFailureException("Storage " + storage + " is full");
+                }
+            } else {
+                throw new IllegalEntityException("Storage " + storage + " does not exist in the database");
+            }
+        } finally {
+            Utils.closeQuietly(null, checkSt);
+        }
     }
 }
