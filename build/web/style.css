@@ -1,0 +1,31 @@
+
+root { 
+    display: block;
+}
+
+body {
+    font-family: Calibri, Arial, Tahoma, Verdana;    
+}
+
+th {
+    background-color: #b0b0b0;
+    text-align: left;
+}
+
+form td {
+    background-color: #b0b0b0;
+}
+
+tr.odd td  {
+    background-color: #f0f0f0;
+}
+
+tr.even td  {
+    background-color: #d0d0d0;
+}
+
+.error {
+    border: solid 1px red; 
+    background-color: yellow; 
+    padding: 10px
+}

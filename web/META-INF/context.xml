@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/MediaEvidenceManager-web">
+<Resource name="jdbc/EvidenceManager"
+        auth="Container" type="javax.sql.DataSource"
+        driverClassName="org.apache.derby.jdbc.ClientDriver"
+        username="tomas" password="tomas"
+        url="jdbc:derby://localhost:1527/MediaEvidenceManager-web"/>
+</Context>
