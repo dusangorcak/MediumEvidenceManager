@@ -11,9 +11,10 @@
         <h1>Storage list</h1>
         
         <table>
-            <tr><th>Capacity</th><th>Address</th></tr>
+            <tr><th>Id</th><th>Capacity</th><th>Address</th></tr>
         <c:forEach items="${storages}" var="storage" varStatus="loopStatus">
-            <tr class="${loopStatus.index % 2 == 0 ? 'odd' : 'even'}">                
+            <tr class="${loopStatus.index % 2 == 0 ? 'odd' : 'even'}"> 
+                <td><c:out value="${storage.id}"/></td>
                 <td><c:out value="${storage.capacity}"/></td>
                 <td><c:out value="${storage.address}"/></td>                
             </tr>

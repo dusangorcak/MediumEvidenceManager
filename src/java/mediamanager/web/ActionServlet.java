@@ -71,6 +71,7 @@ public class ActionServlet extends HttpServlet {
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
         if (request.getServletPath().equals(ACTION_LIST_STORAGES)) {

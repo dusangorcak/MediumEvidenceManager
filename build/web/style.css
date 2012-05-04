@@ -1,27 +1,39 @@
 
 root { 
     display: block;
+    background-color: #bbff99;
 }
 
 body {
     font-family: Calibri, Arial, Tahoma, Verdana;    
 }
 
+h1{
+    color : #CC00FF;
+    text-decoration:underline;
+}
+
 th {
-    background-color: #b0b0b0;
-    text-align: left;
+    border: solid 1px  #CC00FF;
+    text-align: center;
 }
 
 form td {
-    background-color: #b0b0b0;
+    border : solid 1px black;
+    background-color: yellow;
+}
+input{
+    background-color: #CCCCFF;
 }
 
 tr.odd td  {
-    background-color: #f0f0f0;
+    border: solid 1px black;
+    background-color: #CCCCFF;
 }
 
 tr.even td  {
-    background-color: #d0d0d0;
+    border: solid 1px black;
+    background-color: #9999FF;
 }
 
 .error {
@@ -29,3 +41,5 @@ tr.even td  {
     background-color: yellow; 
     padding: 10px
 }
+
+
