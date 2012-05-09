@@ -2,7 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package manager.gui;
+package gui;
+
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sql.DataSource;
+import manager1.StorageManagerImpl;
+import manager1.Utils;
+import org.apache.commons.dbcp.BasicDataSource;
 
 /**
  *
@@ -10,12 +18,41 @@ package manager.gui;
  */
 public class ManagerFrame extends javax.swing.JFrame {
 
+    /*private class MyRenderer extends DefaultTableCellRenderer  {
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component component = super.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,column);
+                if(row %2 == 0){
+                    component.setBackground(Color.white);
+                }else{
+                    component.setBackground(Color.GRAY);
+                } 
+                
+                if(isSelected){
+                    component.setBackground(Color.BLUE);
+                }
+                return component;
+            }
+    };*/
     /**
      * Creates new form ManagerFrame
      */
     public ManagerFrame() {
         initComponents();
+        StorageManagerImpl manager = new StorageManagerImpl();
+        try {
+            DataSource ds = prepareDataSource();            
+            manager.setDataSource(ds);
+            Utils.tryCreateTables(ds,StorageManagerImpl.class.getResource("CreateTables.sql"));
+        } catch ( SQLException ex) {
+            Logger.getLogger(ManagerFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        //jTable1.setDefaultRenderer(Object.class, new MyRenderer());
     }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -64,6 +101,8 @@ public class ManagerFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Medium List");
 
+        jTabbedPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -83,6 +122,8 @@ public class ManagerFrame extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setAutoscrolls(false);
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
         jTable1.getColumnModel().getColumn(2).setHeaderValue("Genre");
         jTable1.getColumnModel().getColumn(3).setHeaderValue("Price");
@@ -169,17 +210,17 @@ public class ManagerFrame extends javax.swing.JFrame {
 
         jTable3.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Capacity", "Address"
+                "Capacity", "Address", "Name"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -252,29 +293,29 @@ public class ManagerFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton7ActionPerformed
+    }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton8ActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton9ActionPerformed
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -312,10 +353,19 @@ public class ManagerFrame extends javax.swing.JFrame {
          */
         java.awt.EventQueue.invokeLater(new Runnable() {
 
+            @Override
             public void run() {
                 new ManagerFrame().setVisible(true);
             }
         });
+    }
+    
+    private DataSource prepareDataSource(){
+        BasicDataSource ds = new BasicDataSource();        
+        ds.setUrl(java.util.ResourceBundle.getBundle("gui/resource").getString("jdbc.url"));
+        ds.setUsername(java.util.ResourceBundle.getBundle("gui/resource").getString("jdbc.username"));
+        ds.setPassword(java.util.ResourceBundle.getBundle("gui/resource").getString("jdbc.password"));
+        return ds;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

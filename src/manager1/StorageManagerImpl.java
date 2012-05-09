@@ -31,7 +31,10 @@ public class StorageManagerImpl implements StorageManager {
         }        
         if(store.getId() != null){
             throw new IllegalArgumentException("Store has allready set id");
-        }        
+        } 
+        if(store.getName().isEmpty()){
+            throw new IllegalArgumentException("Store name is empty");
+        }
         if(store.getCapacity() <= 0){
             throw new IllegalArgumentException("Store capaciry is less than 0");
         }        
@@ -43,10 +46,11 @@ public class StorageManagerImpl implements StorageManager {
         Connection conn = null;
         try{
             conn = datasource.getConnection();
-            st = conn.prepareStatement("INSERT INTO STORAGE(CAPACITY,ADDRESS) VALUES (?,?)",
+            st = conn.prepareStatement("INSERT INTO STORAGE(NAME,CAPACITY,ADDRESS) VALUES (?,?,?)",
                     Statement.RETURN_GENERATED_KEYS);
-            st.setInt(1, store.getCapacity());
-            st.setString(2, store.getAddress());
+            st.setString(1, store.getName());
+            st.setInt(2, store.getCapacity());
+            st.setString(3, store.getAddress());
             int addedRows = st.executeUpdate();
             if(addedRows != 1){
                 throw new RunTimeFailureException("Error:  when inserting a storage into DB - " + store);
@@ -86,7 +90,10 @@ public class StorageManagerImpl implements StorageManager {
         }  
         if(store.getId() == null){
             throw new IllegalArgumentException("Error: id is null");
-        }        
+        } 
+        if(store.getName().isEmpty()){
+            throw new IllegalArgumentException("Error: name is empty");
+        }
         if(store.getAddress() == null){
             throw new IllegalArgumentException("Error: address is null");
         }        
@@ -126,7 +133,7 @@ public class StorageManagerImpl implements StorageManager {
         try {
             conn = datasource.getConnection();
             st = conn.prepareStatement
-                    ("SELECT id,capacity,address FROM STORAGE WHERE id=?");
+                    ("SELECT id,name,capacity,address FROM STORAGE WHERE id=?");
             st.setLong(1,id);
             ResultSet rs = st.executeQuery();
             
@@ -157,6 +164,7 @@ public class StorageManagerImpl implements StorageManager {
     private Storage resultSetToStorage(ResultSet rs) throws SQLException {
         Storage store = new Storage();
         store.setId(rs.getLong("id"));
+        store.setName(rs.getString("name"));
         store.setCapacity(rs.getInt("capacity"));
         store.setAddress(rs.getString("address"));
         return store;
@@ -171,7 +179,9 @@ public class StorageManagerImpl implements StorageManager {
         if(store.getId() == null){
             throw new IllegalArgumentException("Store is null");
         }  
-              
+        if(store.getName().isEmpty()){
+            throw new IllegalArgumentException("Store name is empty");
+        }      
         if(store.getCapacity() <= 0){
             throw new IllegalArgumentException("Store capaciry is less than 0");
         }        
@@ -184,11 +194,13 @@ public class StorageManagerImpl implements StorageManager {
         try {
             conn = datasource.getConnection();
             st = conn.prepareStatement
-                    ("UPDATE storage SET capacity=?, address=?"
+                    ("UPDATE storage SET name=?,capacity=?, address=?"
                             + " WHERE id=?");
-            st.setLong(3,store.getId());
-            st.setInt(1, store.getCapacity());
-            st.setString(2, store.getAddress());
+            
+            st.setString(1, store.getName());
+            st.setInt(2, store.getCapacity());
+            st.setString(3, store.getAddress());
+            st.setLong(4,store.getId());
             int updated = st.executeUpdate();
             if(updated > 2){
                 throw new RunTimeFailureException("Error: updated must be at least two attributes" + store);
